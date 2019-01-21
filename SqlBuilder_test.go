@@ -1,6 +1,7 @@
 package GoMybatis
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/zhuxiujia/GoMybatis/example"
 	"github.com/zhuxiujia/GoMybatis/lib/github.com/Knetic/govaluate"
@@ -10,7 +11,51 @@ import (
 	"time"
 )
 
-//压力测试 sql构建情况
+//压力测试 原生go语言 sql构建
+func Benchmark_SqlBuilder_Golang(b *testing.B) {
+	b.StopTimer()
+	var paramMap = make(map[string]SqlArg)
+	paramMap["name"] = SqlArg{
+		Value: "",
+		Type:  reflect.TypeOf(""),
+	}
+	paramMap["startTime"] = SqlArg{
+		Value: "",
+		Type:  reflect.TypeOf(""),
+	}
+	paramMap["endTime"] = SqlArg{
+		Value: "",
+		Type:  reflect.TypeOf(""),
+	}
+	paramMap["page"] = SqlArg{
+		Value: 0,
+		Type:  reflect.TypeOf(0),
+	}
+	paramMap["size"] = SqlArg{
+		Value: 0,
+		Type:  reflect.TypeOf(0),
+	}
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		var sql bytes.Buffer
+		sql.WriteString(`select * from biz_activity where delete_flag=1`)
+		if paramMap["name"].Value != nil {
+			sql.WriteString(`and name like concat('%',#{name},'%')`)
+		}
+		if paramMap["startTime"].Value != nil {
+			sql.WriteString(` and create_time >= #{startTime}`)
+		}
+		if paramMap["endTime"].Value != nil {
+			sql.WriteString(` and create_time <= #{endTime}`)
+		}
+		sql.WriteString(`order by create_time desc`)
+		if paramMap["page"].Value != nil && paramMap["size"].Value != nil {
+			sql.WriteString(`limit #{page}, #{size}`)
+		}
+	}
+}
+
+//压力测试 sql构建情况，约比原生go语言慢10倍
 func Benchmark_SqlBuilder(b *testing.B) {
 	b.StopTimer()
 	var mapper = `<?xml version="1.0" encoding="UTF-8"?>
