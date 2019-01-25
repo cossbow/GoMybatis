@@ -17,7 +17,7 @@ func (this ExampleActivityGoMapper) New() ExampleActivityGoMapper {
 	this.SelectByCondition = func(name *string, startTime *time.Time, endTime *time.Time, page *int, size *int) (activities []Activity, e error) {
 		var buf bytes.Buffer
 		var bind bytes.Buffer
-		bind.WriteString(`%` + utils.GetValue(name, nil) + `%`)
+		bind.WriteString(`%` + utils.GetValue(name, GoMybatis.PtrStringType) + `%`)
 		buf.WriteString(`select * from biz_activity`)
 		if name != nil {
 			buf.WriteString(" and name like ")
