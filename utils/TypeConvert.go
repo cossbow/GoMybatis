@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -52,7 +53,7 @@ func GetValue(arg interface{}, types reflect.Type) string {
 		case reflect.String:
 			return v.String()
 		case reflect.Int:
-			return strconv.FormatInt(v.Int(), 8)
+			return strconv.FormatInt(v.Int(), 36)
 		case reflect.Int8:
 			return strconv.FormatInt(v.Int(), 8)
 		case reflect.Int16:
@@ -60,7 +61,7 @@ func GetValue(arg interface{}, types reflect.Type) string {
 		case reflect.Int32:
 			return strconv.FormatInt(v.Int(), 32)
 		case reflect.Int64:
-			return strconv.FormatInt(v.Int(), 64)
+			return strconv.FormatInt(v.Int(), 36)
 		case reflect.Float32:
 			return strconv.FormatFloat(v.Float(), 'f', -1, 32)
 		case reflect.Float64:
@@ -76,7 +77,7 @@ func GetValue(arg interface{}, types reflect.Type) string {
 		case reflect.Uint32:
 			return strconv.FormatUint(v.Uint(), 32)
 		case reflect.Uint64:
-			return strconv.FormatUint(v.Uint(), 64)
+			return strconv.FormatUint(v.Uint(), 36)
 		case reflect.Struct:
 			if strings.Index(v.String(), "time.Time") != -1 {
 				return v.Interface().(time.Time).Format(`2006-01-02 15:04:05`)
@@ -122,12 +123,12 @@ func caseType(arg interface{}, types reflect.Type) string {
 		if types.String() == "time.Time" {
 			return arg.(time.Time).Format(`2006-01-02 15:04:05`)
 		} else {
-			return "unknowType"
+			return fmt.Sprint(arg)
 		}
 	default:
-		return "unknowType"
+		return fmt.Sprint(arg)
 	}
-	return "unknowType"
+	return fmt.Sprint(arg)
 }
 
 func caseTypePtr(arg interface{}, types reflect.Type) string {
@@ -165,10 +166,10 @@ func caseTypePtr(arg interface{}, types reflect.Type) string {
 		if types.String() == "*time.Time" {
 			return (*arg.(*time.Time)).Format(`2006-01-02 15:04:05`)
 		} else {
-			return "unknowType"
+			return fmt.Sprint(arg)
 		}
 	default:
-		return "unknowType"
+		return fmt.Sprint(arg)
 	}
-	return "unknowType"
+	return fmt.Sprint(arg)
 }
