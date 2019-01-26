@@ -79,7 +79,7 @@ func GetValue(arg interface{}, types reflect.Type) string {
 			return strconv.FormatUint(v.Uint(), 64)
 		case reflect.Struct:
 			if strings.Index(v.String(), "time.Time") != -1 {
-				return v.Interface().(time.Time).Format(time.RFC3339)
+				return v.Interface().(time.Time).Format(`2006-01-02 15:04:05`)
 			}
 		default:
 			return v.String()
@@ -119,8 +119,8 @@ func caseType(arg interface{}, types reflect.Type) string {
 	case reflect.Uint64:
 		return strconv.FormatUint(uint64(arg.(uint64)), 64)
 	case reflect.Struct:
-		if strings.Index(types.String(), "time.Time") != -1 {
-			return arg.(time.Time).Format(time.RFC3339)
+		if types.String() == "time.Time" {
+			return arg.(time.Time).Format(`2006-01-02 15:04:05`)
 		} else {
 			return "unknowType"
 		}
@@ -131,7 +131,8 @@ func caseType(arg interface{}, types reflect.Type) string {
 }
 
 func caseTypePtr(arg interface{}, types reflect.Type) string {
-	switch types.Kind() {
+	var childType = types.Elem()
+	switch childType.Kind() {
 	case reflect.String:
 		return *arg.(*string)
 	case reflect.Int:
@@ -161,8 +162,8 @@ func caseTypePtr(arg interface{}, types reflect.Type) string {
 	case reflect.Uint64:
 		return strconv.FormatUint(uint64(*arg.(*uint64)), 64)
 	case reflect.Struct:
-		if strings.Index(types.String(), "time.Time") != -1 {
-			return (*arg.(*time.Time)).Format(time.RFC3339)
+		if types.String() == "*time.Time" {
+			return (*arg.(*time.Time)).Format(`2006-01-02 15:04:05`)
 		} else {
 			return "unknowType"
 		}
